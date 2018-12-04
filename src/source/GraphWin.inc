@@ -218,6 +218,7 @@ WM_CREATE           =  01h		; create window
 WM_LBUTTONDOWN      =  0201h	; left mouse button down
 WM_PAINT            =  000Fh    ; paint message
 WM_TIMER            =  0113h    ; timer fires
+WM_KEYDOWN			=  0100h	; Key down event
 
 COMMENT @
 MB_ICONERROR           =  010h	; stop sign icon

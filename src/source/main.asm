@@ -19,6 +19,11 @@ DTFLAGS = 25h  ; Needed for drawtext
 PADDLEHEIGHT = 250
 PADDLEWIDTH = 25
 
+K_W = 57h
+K_S = 53h
+K_O = 4Fh
+K_L = 4Ch
+
 ;==================== DATA =======================
 .data
 
@@ -146,6 +151,33 @@ WinProc PROC,
 	    ADDR WindowName, MB_OK
 	  INVOKE PostQuitMessage,0
 	  jmp WinProcExit
+	.ELSEIF eax == WM_KEYDOWN
+		cmp wParam, K_W
+		je W
+		cmp wParam, K_S
+		je S
+		cmp wParam, K_O
+		je O
+		cmp wParam, K_L
+		je L
+		jmp NONE
+		W:
+			mov ebx, lpaddleloc
+			sub ebx, 5
+			mov lpaddleloc, ebx
+		S:
+			mov ebx, lpaddleloc
+			add ebx, 5
+			mov lpaddleloc, ebx
+		O:
+			mov ebx, rpaddleloc
+			sub ebx, 5
+			mov rpaddleloc, ebx
+		L:
+			mov ebx, rpaddleloc
+			add ebx, 5
+			mov rpaddleloc, ebx
+		NONE:
 	.ELSEIF eax == WM_TIMER     ; did a timer fire?
 	  INVOKE InvalidateRect, hWnd, 0, 1
 	  jmp WinProcExit
@@ -181,7 +213,15 @@ WinProc PROC,
 		; Draw left paddle
 		mov ebx, lpaddleloc
 		add ebx, PADDLEHEIGHT
-		INVOKE CreateRectRgn, 10, lpaddleloc, PADDLEWIDTH, ebx
+		INVOKE CreateRectRgn, 10, lpaddleloc, 10 + PADDLEWIDTH, ebx
+		mov ebx, eax
+		INVOKE CreateSolidBrush, 00000000h
+		INVOKE FillRgn, hdc, ebx, eax
+
+		; Draw right paddle
+		mov ebx, rpaddleloc
+		add ebx, PADDLEHEIGHT
+		INVOKE CreateRectRgn, 1000, rpaddleloc, 1000 + PADDLEWIDTH, ebx
 		mov ebx, eax
 		INVOKE CreateSolidBrush, 00000000h
 		INVOKE FillRgn, hdc, ebx, eax
