@@ -122,6 +122,20 @@ LineTo PROTO,      ; Draw a line from the current location to x,y
 	x:DWORD,
 	y:DWORD
 
+CreateRectRgn PROTO,	; Creates a rectanguar region
+	x1:DWORD,
+	x2:DWORD,
+	x3:DWORD,
+	x4:DWORD
+
+FillRgn PROTO,
+	hdc:DWORD,
+	lprc:DWORD,
+	hbr:DWORD
+
+CreateSolidBrush PROTO,
+	color:DWORD
+
 LoadCursorA PROTO,	; load a cursor resource
 	hInstance:DWORD,
 	pString:PTR BYTE
@@ -194,6 +208,9 @@ WS_VISIBLE          =     10000000h
 
 ; Window show constants
 SW_SHOW             =     05h
+
+; Brush constants
+BS_SOLID			= 	0h
 
 ; Window Messages
 WM_CLOSE            =  0010h	; close window

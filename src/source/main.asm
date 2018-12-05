@@ -16,6 +16,8 @@ INCLUDE Irvine32.inc
 INCLUDE GraphWin.inc
 
 DTFLAGS = 25h  ; Needed for drawtext
+PADDLEHEIGHT = 250
+PADDLEWIDTH = 25
 
 ;==================== DATA =======================
 .data
@@ -33,7 +35,7 @@ GreetText  BYTE "Welcome to PongASM. "
 CloseMsg   BYTE "Exiting PongASM. Thanks for playing!" ,0
 
 ;HelloStr   BYTE "Hello World",0
-rc RECT <0,0,200,200>
+;rc RECT <0,0,200,200>
 ps PAINTSTRUCT <?>
 hdc DWORD ?
 
@@ -50,6 +52,10 @@ xloc SDWORD 50   ; x location of the box
 yloc SDWORD 50   ; y location of the box
 xdir SDWORD 6    ; direction of box in x
 ydir SDWORD 5    ; direction of box in y
+
+;brushstruct LOGBRUSH <BS_SOLID, FFFFFFh, 0h>
+lpaddleloc DWORD 50	; top of left paddle
+rpaddleloc DWORD 50	; top of right paddle
 
 ; Define the Application's Window class structure.
 MainWin WNDCLASS <NULL,WinProc,NULL,NULL,NULL,NULL,NULL, \
@@ -172,6 +178,14 @@ WinProc PROC,
 	  INVOKE LineTo, hdc, xloc,   ecx
 	  INVOKE LineTo, hdc, xloc,   yloc
 
+		; Draw left paddle
+		mov ebx, lpaddleloc
+		add ebx, PADDLEHEIGHT
+		INVOKE CreateRectRgn, 10, lpaddleloc, PADDLEWIDTH, ebx
+		mov ebx, eax
+		INVOKE CreateSolidBrush, 00000000h
+		INVOKE FillRgn, hdc, ebx, eax
+
 	  ; reflect xdir
 		; Bug in assembler can't use .IF here for some reason...
 		cmp xloc, 1000
@@ -211,6 +225,9 @@ WinProc PROC,
 WinProcExit:
 	ret
 WinProc ENDP
+
+;---------------------------------------------------
+
 
 ;---------------------------------------------------
 ErrorHandler PROC
