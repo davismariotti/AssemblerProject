@@ -41,6 +41,11 @@ GreetText  BYTE "Welcome to PongASM. "
 
 CloseMsg   BYTE "Exiting PongASM. Thanks for playing!" ,0
 
+Score1Str   BYTE "0",0
+score1rect RECT <0,0,400,100>
+Score2Str   BYTE "1",0
+score2rect RECT <0,0,600,100>
+
 ps PAINTSTRUCT <?>
 hdc DWORD ?
 
@@ -60,6 +65,9 @@ ydir SDWORD 5    ; y direction of box
 
 lpaddleloc DWORD 50	; top of left paddle
 rpaddleloc DWORD 50	; top of right paddle
+
+lScore DWORD 48 ; Ascii for 0
+rScore DWORD 48
 
 ; Define the Application's Window class structure.
 MainWin WNDCLASS <NULL,WinProc,NULL,NULL,NULL,NULL,NULL, \
@@ -205,6 +213,9 @@ WinProc PROC,
 		   mov eax, 0
 	     sub eax, xdir
 		   mov xdir, eax
+       mov eax, rScore
+       inc eax
+       mov rScore, eax
 	  L1:
 
 		cmp xloc, 0
@@ -212,6 +223,9 @@ WinProc PROC,
 		   mov eax, 0
 	     sub eax, xdir
 		   mov xdir, eax
+       mov eax, lScore
+       inc eax
+       mov lScore, eax
 	  L2:
 
 	  ; reflect ydir
@@ -228,6 +242,10 @@ WinProc PROC,
 	     sub eax, ydir
 		   mov ydir, eax
 	  L4:
+
+    ; output text
+    INVOKE DrawTextA, hdc, ADDR lScore, 1, ADDR score1rect, DTFLAGS
+    INVOKE DrawTextA, hdc, ADDR rScore, 1, ADDR score2rect, DTFLAGS
 
 	.ELSE		; other message?
 	  INVOKE DefWindowProc, hWnd, localMsg, wParam, lParam
