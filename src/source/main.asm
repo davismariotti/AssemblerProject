@@ -1,5 +1,5 @@
 TITLE PongASM                   (main.asm)
-; Final Project for Andrew Hutson and Davis Mariotti
+; Final Project of Andrew Hutson and Davis Mariotti
 ; Based on the windows program with animation in-class example
 ; Thanks, Kent!
 
@@ -7,7 +7,7 @@ TITLE PongASM                   (main.asm)
 ; Currently, the paddles can only move down, and collision detection is not functioning.
 ; The end result will hopefully be a functioning Pong game
 
-; Original message: 
+; Original message:
 ; This program displays a resizable application window and
 ; several popup message boxes.
 ; Thanks to Tom Joyce for creating a prototype
@@ -19,7 +19,7 @@ INCLUDE GraphWin.inc
 DTFLAGS = 25h  ; Needed for drawtext
 PADDLEHEIGHT = 250
 PADDLEWIDTH = 25
-BALLSIZE = 25
+BALLSIZE = 15
 
 K_W = 57h
 K_S = 53h
@@ -36,13 +36,11 @@ PopupTitle BYTE "Popup Window" ,0
 PopupText	BYTE "Your clicking does nothing! *Evil Laugh*" ,0
 
 GreetTitle BYTE "PongASM Initiated" ,0
-GreetText  BYTE "Welcome to PongASM. " 
+GreetText  BYTE "Welcome to PongASM. "
 					 BYTE "Press OK to continue.",0
 
 CloseMsg   BYTE "Exiting PongASM. Thanks for playing!" ,0
 
-;HelloStr   BYTE "Hello World",0
-;rc RECT <0,0,200,200>
 ps PAINTSTRUCT <?>
 hdc DWORD ?
 
@@ -57,10 +55,9 @@ hInstance DWORD ?
 
 xloc SDWORD 50   ; x location of the box
 yloc SDWORD 50   ; y location of the box
-xdir SDWORD 6    ; direction of box in x
-ydir SDWORD 5    ; direction of box in y
+xdir SDWORD 6    ; x direction of box
+ydir SDWORD 5    ; y direction of box
 
-;brushstruct LOGBRUSH <BS_SOLID, FFFFFFh, 0h>
 lpaddleloc DWORD 50	; top of left paddle
 rpaddleloc DWORD 50	; top of right paddle
 
@@ -156,12 +153,12 @@ WinProc PROC,
 	.ELSEIF eax == WM_TIMER     ; did a timer fire?
 	  INVOKE InvalidateRect, hWnd, 0, 1
 	  jmp WinProcExit
-	.ELSEIF eax == WM_PAINT		; window needs redrawing? 
-	  INVOKE BeginPaint, hWnd, ADDR ps 
+	.ELSEIF eax == WM_PAINT		; window needs redrawing?
+	  INVOKE BeginPaint, hWnd, ADDR ps
 	  mov hdc, eax
 
 	  ; inc x position of the box
-	  mov ebx, xloc         
+	  mov ebx, xloc
 	  add ebx, xdir
 	  mov xloc, ebx
 
@@ -170,45 +167,39 @@ WinProc PROC,
 	  add ecx, ydir
 	  mov yloc, ecx
 
-		; update the paddles
-		call	UpdatePaddles
-	  
+	  ; update the paddles
+	  call	UpdatePaddles
+
 	  ; draw the box
-	  INVOKE MoveToEx, hdc, xloc, yloc, 0
-	  mov ebx, xloc
-	  add ebx, BALLSIZE
-	  INVOKE LineTo, hdc, ebx, yloc
-	  mov ebx, xloc
-	  add ebx, BALLSIZE
-	  mov ecx, yloc
-	  add ecx, BALLSIZE
-	  INVOKE LineTo, hdc, ebx, ecx
-	  mov ecx, yloc
-	  add ecx, BALLSIZE
-	  INVOKE LineTo, hdc, xloc,   ecx
-	  INVOKE LineTo, hdc, xloc,   yloc
+    mov ebx, xloc
+    mov edx, yloc
+    add ebx, BALLSIZE
+    add edx, BALLSIZE
+    INVOKE CreateRectRgn, xloc, yloc, ebx, edx
+    mov ebx, eax
+    INVOKE CreateSolidBrush, 00000000h
+    INVOKE FillRgn, hdc, ebx, eax
 
-		; Draw left paddle
-		mov ebx, lpaddleloc
-		add ebx, PADDLEHEIGHT
-		INVOKE CreateRectRgn, 10, lpaddleloc, 10 + PADDLEWIDTH, ebx
-		mov ebx, eax
-		INVOKE CreateSolidBrush, 00000000h
-		INVOKE FillRgn, hdc, ebx, eax
+    ; Draw left paddle
+    mov ebx, lpaddleloc
+    add ebx, PADDLEHEIGHT
+    INVOKE CreateRectRgn, 10, lpaddleloc, 10 + PADDLEWIDTH, ebx
+    mov ebx, eax
+    INVOKE CreateSolidBrush, 001782FFh
+    INVOKE FillRgn, hdc, ebx, eax
 
-		; Draw right paddle
-		mov ebx, rpaddleloc
-		add ebx, PADDLEHEIGHT
-		INVOKE CreateRectRgn, 900, rpaddleloc, 900 + PADDLEWIDTH, ebx
-		mov ebx, eax
-		INVOKE CreateSolidBrush, 00000000h
-		INVOKE FillRgn, hdc, ebx, eax
+    ; Draw right paddle
+    mov ebx, rpaddleloc
+    add ebx, PADDLEHEIGHT
+    INVOKE CreateRectRgn, 900, rpaddleloc, 900 + PADDLEWIDTH, ebx
+    mov ebx, eax
+    INVOKE CreateSolidBrush, 00AA1D23h
+    INVOKE FillRgn, hdc, ebx, eax
 
-		; Bounce the ball off the paddles
-		call BounceBall
+    ; Bounce the ball off the paddles
+    call BounceBall
 
 	  ; reflect xdir
-		; Bug in assembler can't use .IF here for some reason...
 		cmp xloc, 1000
 	  jl L1
 		   mov eax, 0
@@ -284,7 +275,7 @@ UpdatePaddles PROC
 		sub ebx, 5
 		mov lpaddleloc, ebx
 	.ENDIF
-	
+
 	; S key
 	INVOKE GetAsyncKeyState, K_S
 	.IF eax == 8000h
@@ -292,7 +283,7 @@ UpdatePaddles PROC
 		add ebx, 5
 		mov lpaddleloc, ebx
 	.ENDIF
-	
+
 	; O key
 	INVOKE GetAsyncKeyState, K_O
 	.IF eax == 8000h
@@ -300,7 +291,7 @@ UpdatePaddles PROC
 		sub ebx, 5
 		mov rpaddleloc, ebx
 	.ENDIF
-		
+
 	; L key
 	INVOKE GetAsyncKeyState, K_L
 	.IF eax == 8000h
@@ -313,6 +304,8 @@ UpdatePaddles PROC
 UpdatePaddles ENDP
 
 BounceBall PROC
+
+  ; Check left paddle
 	mov eax, PADDLEWIDTH + 10
 	cmp xloc, eax ; check x direction
 	jge Bypass1 ; if no paddle contact, do not bounce
@@ -324,14 +317,15 @@ BounceBall PROC
 			add eax, PADDLEHEIGHT
 			cmp yloc, eax ; check y direction with bottom of paddle
 			jge Bypass1 ; if no paddle contact, do not bounce
-			
+
 				; if paddle contact has occurred, bounce the ball
 				mov eax, 0
 				sub eax, xdir
 				mov xdir, eax
 
 	Bypass1:
-				
+
+  ; Check right paddle
 	mov eax, xloc
 	add eax, BALLSIZE
 	cmp eax, 900 ; check x direction
@@ -344,14 +338,14 @@ BounceBall PROC
 			add eax, PADDLEHEIGHT
 			cmp yloc, eax ; check y direction with bottom of paddle
 			jge Bypass2 ; if no paddle contact, do not bounce
-			
+
 				; if paddle contact has occurred, bounce the ball
 				mov eax, 0
 				sub eax, xdir
 				mov xdir, eax
-	
+
 	Bypass2:
-	
+
 	ret
 BounceBall ENDP
 
