@@ -19,6 +19,7 @@ INCLUDE GraphWin.inc
 DTFLAGS = 25h  ; Needed for drawtext
 PADDLEHEIGHT = 250
 PADDLEWIDTH = 25
+BALLSIZE = 25
 
 K_W = 57h
 K_S = 53h
@@ -175,15 +176,15 @@ WinProc PROC,
 	  ; draw the box
 	  INVOKE MoveToEx, hdc, xloc, yloc, 0
 	  mov ebx, xloc
-	  add ebx, 25
+	  add ebx, BALLSIZE
 	  INVOKE LineTo, hdc, ebx, yloc
 	  mov ebx, xloc
-	  add ebx, 25
+	  add ebx, BALLSIZE
 	  mov ecx, yloc
-	  add ecx, 25  	  
+	  add ecx, BALLSIZE
 	  INVOKE LineTo, hdc, ebx, ecx
 	  mov ecx, yloc
-	  add ecx, 25
+	  add ecx, BALLSIZE
 	  INVOKE LineTo, hdc, xloc,   ecx
 	  INVOKE LineTo, hdc, xloc,   yloc
 
@@ -198,10 +199,13 @@ WinProc PROC,
 		; Draw right paddle
 		mov ebx, rpaddleloc
 		add ebx, PADDLEHEIGHT
-		INVOKE CreateRectRgn, 1000, rpaddleloc, 1000 + PADDLEWIDTH, ebx
+		INVOKE CreateRectRgn, 900, rpaddleloc, 900 + PADDLEWIDTH, ebx
 		mov ebx, eax
 		INVOKE CreateSolidBrush, 00000000h
 		INVOKE FillRgn, hdc, ebx, eax
+
+		; Bounce the ball off the paddles
+		call BounceBall
 
 	  ; reflect xdir
 		; Bug in assembler can't use .IF here for some reason...
@@ -307,5 +311,28 @@ UpdatePaddles PROC
 
 	ret
 UpdatePaddles ENDP
+
+BounceBall PROC
+	mov eax, PADDLEWIDTH + 10
+	cmp xloc, eax ; check x direction
+	jge Bypass ; if no paddle contact, do not bounce
+		mov eax, lpaddleloc
+		add eax, BALLSIZE
+		cmp yloc, eax ; check y direction with top of paddle
+		jle Bypass ; if no paddle contact, do not bounce
+			mov eax, lpaddleloc
+			add eax, PADDLEHEIGHT
+			cmp yloc, eax ; check y direction with bottom of paddle
+			jge Bypass ; if no paddle contact, do not bounce
+
+		; if paddle contact has occurred, bounce the ball
+		mov eax, 0
+	 	sub eax, xdir
+		mov xdir, eax
+	
+	Bypass:
+	
+	ret
+BounceBall ENDP
 
 END
