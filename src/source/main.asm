@@ -3,7 +3,8 @@ TITLE PongASM                   (main.asm)
 ; Based on the windows program with animation in-class example
 ; Thanks, Kent!
 
-; Currently, the program displays a moving box in a window
+; Currently, the program displays a moving box in a window along with two paddles
+; Currently, the paddles can only move down, and collision detection is not functioning.
 ; The end result will hopefully be a functioning Pong game
 
 ; Original message: 
@@ -151,33 +152,6 @@ WinProc PROC,
 	    ADDR WindowName, MB_OK
 	  INVOKE PostQuitMessage,0
 	  jmp WinProcExit
-	.ELSEIF eax == WM_KEYDOWN
-		cmp wParam, K_W
-		je W
-		cmp wParam, K_S
-		je S
-		cmp wParam, K_O
-		je O
-		cmp wParam, K_L
-		je L
-		jmp NONE
-		W:
-			mov ebx, lpaddleloc
-			sub ebx, 5
-			mov lpaddleloc, ebx
-		S:
-			mov ebx, lpaddleloc
-			add ebx, 5
-			mov lpaddleloc, ebx
-		O:
-			mov ebx, rpaddleloc
-			sub ebx, 5
-			mov rpaddleloc, ebx
-		L:
-			mov ebx, rpaddleloc
-			add ebx, 5
-			mov rpaddleloc, ebx
-		NONE:
 	.ELSEIF eax == WM_TIMER     ; did a timer fire?
 	  INVOKE InvalidateRect, hWnd, 0, 1
 	  jmp WinProcExit
@@ -194,6 +168,9 @@ WinProc PROC,
 	  mov ecx, yloc
 	  add ecx, ydir
 	  mov yloc, ecx
+
+		; update the paddles
+		call	UpdatePaddles
 	  
 	  ; draw the box
 	  INVOKE MoveToEx, hdc, xloc, yloc, 0
@@ -293,5 +270,42 @@ messageID  DWORD ?
 	INVOKE LocalFree, pErrorMsg
 	ret
 ErrorHandler ENDP
+
+UpdatePaddles PROC
+	; move paddles by checking key states
+	; W key
+	INVOKE GetAsyncKeyState, K_W
+	.IF eax == 8000h
+		mov ebx, lpaddleloc
+		sub ebx, 5
+		mov lpaddleloc, ebx
+	.ENDIF
+	
+	; S key
+	INVOKE GetAsyncKeyState, K_S
+	.IF eax == 8000h
+		mov ebx, lpaddleloc
+		add ebx, 5
+		mov lpaddleloc, ebx
+	.ENDIF
+	
+	; O key
+	INVOKE GetAsyncKeyState, K_O
+	.IF eax == 8000h
+		mov ebx, rpaddleloc
+		sub ebx, 5
+		mov rpaddleloc, ebx
+	.ENDIF
+		
+	; L key
+	INVOKE GetAsyncKeyState, K_L
+	.IF eax == 8000h
+		mov ebx, rpaddleloc
+		add ebx, 5
+		mov rpaddleloc, ebx
+	.ENDIF
+
+	ret
+UpdatePaddles ENDP
 
 END

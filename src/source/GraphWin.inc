@@ -128,13 +128,16 @@ CreateRectRgn PROTO,	; Creates a rectanguar region
 	x3:DWORD,
 	x4:DWORD
 
-FillRgn PROTO,
+FillRgn PROTO, ; Fills a region with a selected color
 	hdc:DWORD,
 	lprc:DWORD,
 	hbr:DWORD
 
-CreateSolidBrush PROTO,
+CreateSolidBrush PROTO, ; creates a brush for use with FillRgn
 	color:DWORD
+
+GetAsyncKeyState PROTO, ; determines whether a key is pressed at call time
+	vKey:DWORD
 
 LoadCursorA PROTO,	; load a cursor resource
 	hInstance:DWORD,
