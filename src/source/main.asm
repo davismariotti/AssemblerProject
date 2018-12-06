@@ -315,22 +315,42 @@ UpdatePaddles ENDP
 BounceBall PROC
 	mov eax, PADDLEWIDTH + 10
 	cmp xloc, eax ; check x direction
-	jge Bypass ; if no paddle contact, do not bounce
+	jge Bypass1 ; if no paddle contact, do not bounce
 		mov eax, lpaddleloc
 		add eax, BALLSIZE
 		cmp yloc, eax ; check y direction with top of paddle
-		jle Bypass ; if no paddle contact, do not bounce
+		jle Bypass1 ; if no paddle contact, do not bounce
 			mov eax, lpaddleloc
 			add eax, PADDLEHEIGHT
 			cmp yloc, eax ; check y direction with bottom of paddle
-			jge Bypass ; if no paddle contact, do not bounce
+			jge Bypass1 ; if no paddle contact, do not bounce
+			
+				; if paddle contact has occurred, bounce the ball
+				mov eax, 0
+				sub eax, xdir
+				mov xdir, eax
 
-		; if paddle contact has occurred, bounce the ball
-		mov eax, 0
-	 	sub eax, xdir
-		mov xdir, eax
+	Bypass1:
+				
+	mov eax, xloc
+	add eax, BALLSIZE
+	cmp eax, 900 ; check x direction
+	jle Bypass2 ; if no paddle contact, do not bounce
+		mov eax, rpaddleloc
+		add eax, BALLSIZE
+		cmp yloc, eax ; check y direction with top of paddle
+		jle Bypass2 ; if no paddle contact, do not bounce
+			mov eax, rpaddleloc
+			add eax, PADDLEHEIGHT
+			cmp yloc, eax ; check y direction with bottom of paddle
+			jge Bypass2 ; if no paddle contact, do not bounce
+			
+				; if paddle contact has occurred, bounce the ball
+				mov eax, 0
+				sub eax, xdir
+				mov xdir, eax
 	
-	Bypass:
+	Bypass2:
 	
 	ret
 BounceBall ENDP
