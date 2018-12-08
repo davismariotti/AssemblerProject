@@ -3,8 +3,9 @@ TITLE PongASM                   (main.asm)
 ; Based on the windows program with animation in-class example
 ; Thanks, Kent!
 
-; Currently, the program displays a moving box in a window along with two paddles
-; Currently, the paddles can only move down, and collision detection is not functioning.
+; Currently, the game functions, including scoring functionality,
+; though paddles are slightly laggy, and the game freezes after
+; about 45 seconds
 ; The end result will hopefully be a functioning Pong game
 
 ; Original message:
