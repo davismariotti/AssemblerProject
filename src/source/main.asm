@@ -43,9 +43,9 @@ GreetText  BYTE "Welcome to PongASM. "
 CloseMsg   BYTE "Exiting PongASM. Thanks for playing!" ,0
 
 Score1Str   BYTE "0",0
-score1rect RECT <0,0,400,100>
+score1rect RECT <0,0,200,100>
 Score2Str   BYTE "1",0
-score2rect RECT <0,0,600,100>
+score2rect RECT <0,0,1800,100>
 
 ps PAINTSTRUCT <?>
 hdc DWORD ?
@@ -200,7 +200,7 @@ WinProc PROC,
     ; Draw right paddle
     mov ebx, rpaddleloc
     add ebx, PADDLEHEIGHT
-    INVOKE CreateRectRgn, 900, rpaddleloc, 900 + PADDLEWIDTH, ebx
+    INVOKE CreateRectRgn, 975, rpaddleloc, 975 + PADDLEWIDTH, ebx
     mov ebx, eax
     INVOKE CreateSolidBrush, 00AA1D23h
     INVOKE FillRgn, hdc, ebx, eax
@@ -245,8 +245,8 @@ WinProc PROC,
 	  L4:
 
     ; output text
-    INVOKE DrawTextA, hdc, ADDR lScore, 1, ADDR score1rect, DTFLAGS
-    INVOKE DrawTextA, hdc, ADDR rScore, 1, ADDR score2rect, DTFLAGS
+    INVOKE DrawTextA, hdc, ADDR lScore, 1, ADDR score2rect, DTFLAGS
+    INVOKE DrawTextA, hdc, ADDR rScore, 1, ADDR score1rect, DTFLAGS
 
 	.ELSE		; other message?
 	  INVOKE DefWindowProc, hWnd, localMsg, wParam, lParam
@@ -347,7 +347,7 @@ BounceBall PROC
   ; Check right paddle
 	mov eax, xloc
 	add eax, BALLSIZE
-	cmp eax, 900 ; check x direction
+	cmp eax, 975 ; check x direction
 	jle Bypass2 ; if no paddle contact, do not bounce
 		mov eax, rpaddleloc
 		add eax, BALLSIZE
