@@ -9,7 +9,7 @@ TITLE PongASM                   (main.asm)
 ; The end result will hopefully be a functioning Pong game
 
 ; Extra functions from Microsoft Documentation
-; Link: 
+; Link: https://docs.microsoft.com/en-us/windows/desktop/api/_gdi/
 
 ; Original message:
 ; This program displays a resizable application window and
